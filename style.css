@@ -1,0 +1,201 @@
+*,*:before,*:after{
+    box-sizing: border-box;
+}
+
+*{
+    -webkit-font-smoothing: antialiased;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-overflow-scrolling: touch;
+}
+
+button{
+    border: none;
+    appearance: none;
+    outline: none;
+}
+:root{
+    --color-primary:#2563eb;
+    --color-secondary:#082f49;
+    --color-gray-300:#9ca3af;
+    --color-gray-500: #6b7280;
+    --color-white:#ffffff;
+    --color-black:#000000;
+    --color-red:#b91c1c;
+    --color-green:#16a34a;
+}
+
+body{
+    font-family: 'Roboto', sans-serif;
+    overflow-x: hidden;
+}
+
+.container{
+    max-width: 1280px;
+    width: 100%;
+    padding: 0 40px;
+    height: 100%;
+}
+
+
+.input{
+    position: relative;
+}
+
+.input label{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.input input{
+    outline: none;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-300);
+    padding: 10px;
+    border-radius: 6px;
+    caret-color: var(--color-primary);
+    font-family: 'Roboto', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+}
+.input input:focus,.input input:active,.input:hover input{
+    border:1px solid var(--color-primary);
+    transition: 0.3s ease-out;
+}
+.input-label{
+    font-family: inherit;
+    font-weight: 500;
+    font-size: 18px;
+}
+.input-error{
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    color: var(--color-red);
+    font-size: 14px;
+    line-height: normal;
+}
+
+.button{
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+    max-width: max-content;
+}
+.button-default{
+    background-color: var(--color-gray-300);
+    color: var(--color-white);
+}
+.button-primary{
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+.button-error{
+    background-color: var(--color-red);
+    color: var(--color-white);
+}
+.button-success{
+    background-color: var(--color-green);
+    color: var(--color-white);
+}
+.button-link{
+    padding: 10px;
+    background-color: var(--color-white);
+    border:1px solid var(--color-primary);
+    border-radius: 6px;
+    color: var(--color-primary);
+    text-decoration: none;
+    cursor: pointer;
+    height: max-content;
+    display: block;
+    width: max-content;
+}
+.button-link:hover{
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    transition: 0.3s ease-out;
+}
+.button:hover{
+    opacity: 0.8;
+    transition: 0.3s ease-out;
+}
+.form{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.form-controls{
+    display: flex;
+    gap: 20px;
+    padding: 20px 10px;
+    border: 1px solid var(--color-gray-500);
+    border-radius: 6px;
+    position: relative;
+}
+.form-controls__title{
+    position: absolute;
+    top: -12px;
+    left: 8px;
+    background-color: var(--color-white);
+    color: var(--color-black);
+}
+.post-list{
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.post-list__cards{
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+.post-list__title{
+    font-family: inherit;
+    font-size: 24px;
+    line-height: normal;
+    font-weight: 500;
+}
+.post-item{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid var(--color-green);
+}
+.post-item__title{
+    font-size: 20px;
+    font-family: inherit;
+    font-weight: 400;
+}
+.post-item__controls{
+    display: flex;
+    gap: 20px;
+}
+.badge{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    color: var(--color-black);
+    width: max-content;
+    padding: 10px;
+}
+.badge-0{
+    background-color: var(--color-red);
+    color: var(--color-white);
+}
+.badge-1{
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+.badge-3{
+    background-color: var(--color-green);
+    color: var(--color-white);
+}
