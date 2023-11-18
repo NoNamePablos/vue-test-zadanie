@@ -173,6 +173,7 @@ body{
     font-size: 20px;
     font-family: inherit;
     font-weight: 400;
+    cursor: pointer;
 }
 .post-item__controls{
     display: flex;
@@ -195,7 +196,7 @@ body{
     background-color: var(--color-primary);
     color: var(--color-white);
 }
-.badge-3{
+.badge-2{
     background-color: var(--color-green);
     color: var(--color-white);
 }
