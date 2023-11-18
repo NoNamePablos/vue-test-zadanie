@@ -96,8 +96,8 @@ const usePosts=()=>{
     return {fetchPosts,createPost,fetchPostsById,deletePostById,updatePostById}
 }
 
-const Badge={
-    name:'Badge',
+const VBadge={
+    name:'VBadge',
     template:`
         <div class="badge" :class="classIntent">
         {{text}}
@@ -186,8 +186,8 @@ const VButton={
     }
 }
 
-const DefaultLayout={
-    name:'DefaultLayout',
+const VDefaultLayout={
+    name:'VDefaultLayout',
     template:`
        <div class="container">
         <router-view v-slot="{Component}">
@@ -340,7 +340,7 @@ const Detail={
             <router-link class="button-link"  to="/" >Назад</router-link>
             <div class="detail__title">Пост №{{pageID}}</div>
             <div class="detail-body">
-                <Badge :text="itemStatus" :intent="item.status"  />
+                <VBadge :text="itemStatus" :intent="item.status"  />
                 <div class="detail-prop">
                     <div class="detail-prop__title">Название:</div>
                     <div class="detail-prop__value">{{item.title}}</div>
@@ -400,7 +400,7 @@ const router = VueRouter.createRouter({
     history: VueRouter.createWebHashHistory(),
     routes, // short for `routes: routes`
 })
-const UI_ELEMENTS=[VInput,VButton,DefaultLayout,VForm,Badge];
+const UI_ELEMENTS=[VInput,VButton,VDefaultLayout,VForm,VBadge];
 UI_ELEMENTS.forEach((el)=>{
     app.component(el.name,el);
 })
