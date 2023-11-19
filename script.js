@@ -1,5 +1,10 @@
 /*https://stackoverflow.com/questions/10883211/why-does-my-http-localhost-cors-origin-not-work*/
 /*Пришлось поставить,cors замучили меня на этапе разработки) https://chromewebstore.google.com/detail/allow-cors-access-control/lhobafahddgcelffkeicbaginigeejlf?pli=1*/
+/*
+* Возникли проблесы с CORS,возможно не все хеддры указал для доступа
+* Поэтому использовал расширение для хрома, Access-Control-Allow-Origin:http://localhost,ибо как я понял на localhost с этим имееются проблемы
+* */
+
 const API_ENDPOINT="https://skylord.ru/test";
 
 const STATUS={
@@ -234,11 +239,11 @@ const PostItem={
                 </div>   
                 <VForm @submit.prevent="submit" v-if="isEditing">
                     <div class="form-header">Редактирование</div>
-                    <select v-model="item.status"  name="select" v-if="isFull">
+                    <select v-model="post.status"  name="select" v-if="isFull">
                         <option :value="idx"  :key="idx" v-for="(item,idx) in statusArray">{{item}}</option>
                     </select>
-                    <VInput v-model="item.title" placeholder="Title" label="Title"  />
-                    <textarea name="description" v-model="item.text" v-if="isFull" />
+                    <VInput v-model="post.title" placeholder="Title" label="Title"  />
+                    <textarea name="description" v-model="post.text" v-if="isFull" />
                     <div class="form-controls">
                            <div class="form-controls__title">Управление</div>
                            <VButton :intent="'primary'">Обновить</VButton>
@@ -255,6 +260,11 @@ const PostItem={
     data(){
         return {
             isEditing:false,
+            post:{
+                title:"",
+                text:"",
+                status:0,
+            }
         }
     },
     props:{
@@ -266,6 +276,19 @@ const PostItem={
             type:Boolean,
             required:false,
             default:false,
+        }
+    },
+    created() {
+        this.post.title=this.item.title;
+    },
+    watch:{
+        item:{
+            handler(newValue,oldValue){
+                this.post.title=newValue.title;
+                this.post.text=newValue.text;
+                this.post.status=newValue.status;
+            },
+            deep:true
         }
     },
     computed:{
@@ -284,8 +307,8 @@ const PostItem={
             this.isEditing=!this.isEditing;
         },
         submit(){
-            if(this.item.title==="")return;
-                usePosts().updatePostById(this.item.id,this.item)
+            if(this.post.title==="")return;
+                usePosts().updatePostById(this.item.id,this.post)
                     .then(response=>{
                         this.$emit('update',response.id)
                         this.handleEdit()
@@ -375,7 +398,7 @@ const Detail={
             <router-link class="button-link"  to="/" >Назад</router-link>
             <div class="detail__title">Пост №{{pageID}}</div>
             <div class="detail-body">
-                <PostItem :item="item" :is-full="true" />
+                <PostItem :item="item" @update="updatePost" :is-full="true" />
            </div>
        </div> 
     `,
@@ -392,6 +415,10 @@ const Detail={
         this.fetchPost();
     },
     methods:{
+        updatePost(id){
+            usePosts().fetchPostsById(id)
+                .then(response=>this.item=response)
+        },
         fetchPost(){
             usePosts().fetchPostsById(this.pageID)
                 .then(response=>this.item=response)
