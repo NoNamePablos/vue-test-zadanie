@@ -305,6 +305,7 @@ const Home={
     data() {
         return {
             posts:[],
+            searchString:"",
             postForm:{
                 title:"",
             }
@@ -313,15 +314,25 @@ const Home={
     components:{
         PostItem,
     },
+    computed:{
+      searchedPosts(){
+          return this.posts.filter((post)=>post.title.toLowerCase().includes(this.searchString.toLowerCase()));
+      }
+    },
     template:`
         <VForm @submit.prevent="submit()">
+           <div class="form-header">Добавить пост</div>
            <VInput v-model="postForm.title" placeholder="Название" label="Название"  />
                <VButton :intent="'primary'">Добавить</VButton>
+        </VForm>
+        <VForm style="margin-top: 15px" @submit.prevent="">
+           <VInput v-model="searchString" placeholder="Поиск" label="Поиск"  />
         </VForm>
        <div class="post-list">
             <div class="post-list__title">Список постов</div>
             <div class="post-list__cards">
-                <PostItem :item="post" @delete="deletePost" @update="updatePosts" v-for="post in posts" :key="post.id" />
+                <PostItem :item="post" v-if="searchedPosts!=0" @delete="deletePost" @update="updatePosts" v-for="post in searchedPosts" :key="post.id" />
+                <div v-else>Список пуст</div>
             </div>
         </div>
        
