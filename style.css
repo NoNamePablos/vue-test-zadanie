@@ -36,6 +36,17 @@ body{
     padding: 0 40px;
     height: 100%;
 }
+textarea{
+    resize: none;
+    min-height: 100px;
+    max-height: 250px;
+    overflow-y: auto;
+    font-size: 16px;
+    font-family: inherit;
+    font-weight: 500;
+    padding: 10px;
+    border-radius: 6px;
+}
 
 
 .input{
@@ -129,6 +140,11 @@ body{
     flex-direction: column;
     gap: 20px;
 }
+.form-header{
+    margin: 10px 0;
+    font-weight: 500;
+    font-size: 18px;
+}
 .form-controls{
     display: flex;
     gap: 20px;
@@ -169,7 +185,20 @@ body{
     border-radius: 6px;
     border: 1px solid var(--color-green);
 }
-.post-item__title{
+.post-item__prop{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.post-item__prop+.post-item__prop{
+    margin-top: 15px;
+}
+.post-item__prop-name{
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 500;
+}
+.post-item__prop-value{
     font-size: 20px;
     font-family: inherit;
     font-weight: 400;
@@ -178,6 +207,9 @@ body{
 .post-item__controls{
     display: flex;
     gap: 20px;
+}
+.post-item .form{
+    margin-top: 20px;
 }
 .badge{
     display: flex;

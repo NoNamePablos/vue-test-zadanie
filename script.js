@@ -5,10 +5,13 @@ const API_ENDPOINT="https://skylord.ru/test";
 const STATUS={
     0:'Не проверено',
     1:'Редактируется',
-    2:'Готово'
+    2:'Готово',
+    length:3
 }
 
+//hook со всеми crud операциями
 const usePosts=()=>{
+
     async function fetchPosts(){
         try{
             const response=await fetch(API_ENDPOINT);
@@ -23,7 +26,6 @@ const usePosts=()=>{
         }
     }
     async function createPost(item){
-        console.log('CRETAE ITEN; ',item);
         try{
             const response=await fetch(`${API_ENDPOINT}/`,{
                 method:'POST',
@@ -34,7 +36,6 @@ const usePosts=()=>{
             })
             if(response.ok){
                 const data=await  response.json();
-                console.log("data",data);
                 return data;
             }else{
                 throw  new Error("Custom Error");
@@ -49,7 +50,6 @@ const usePosts=()=>{
              const response= await fetch(`${API_ENDPOINT}/${id}`)
             if(response.ok){
                 const data=await response.json();
-                console.log(data);
                 return data;
             }else{
                 throw  new Error("Custom Error");
@@ -84,7 +84,6 @@ const usePosts=()=>{
             })
             if(response.ok){
                 const data=await response.json();
-                console.log("response: ",data);
                 return data;
             }else {
                 throw  new Error("Custom Error");
@@ -96,6 +95,7 @@ const usePosts=()=>{
     return {fetchPosts,createPost,fetchPostsById,deletePostById,updatePostById}
 }
 
+//UI-Элементы
 const VBadge={
     name:'VBadge',
     template:`
@@ -109,9 +109,9 @@ const VBadge={
           required:false,
       },
       intent:{
-          type:String,
+          type:[String,Number],
           required:false,
-          default:'default'
+          default:'0'
       }
     },
     computed:{
@@ -215,16 +215,27 @@ const VForm={
     `
 }
 
-
-
-
+//Компонент делки
 const PostItem={
     template:`
        <div class="post-item">
            <div class="post-item__body">
-                <div class="post-item__title" @click="redirectPage">{{item?.title}}</div>
+                <VBadge :text="convertStatus" :intent="item.status" v-if="isFull"  />
+                <div class="post-item__prop">
+                    <div class="post-item__prop-name">Название</div>
+                    <div class="post-item__prop-value" @click="redirectPage">{{item?.title}}</div>
+                </div>    
+                <div class="post-item__prop" v-if="isFull">
+                      <div class="post-item__prop-name">Описание</div>
+                    <div class="post-item__prop-value">{{itemDescription}}</div>
+                </div>   
                 <VForm @submit.prevent="submit" v-if="isEditing">
-                    <VInput v-model="postItem.title" placeholder="Title" label="Title"  />
+                    <div class="form-header">Редактирование</div>
+                    <select v-model="item.status"  name="select" v-if="isFull">
+                        <option :value="idx"  :key="idx" v-for="(item,idx) in statusArray">{{item}}</option>
+                    </select>
+                    <VInput v-model="item.title" placeholder="Title" label="Title"  />
+                    <textarea name="description" v-model="item.text" v-if="isFull" />
                     <div class="form-controls">
                            <div class="form-controls__title">Управление</div>
                            <VButton :intent="'primary'">Обновить</VButton>
@@ -234,26 +245,35 @@ const PostItem={
             </div>
            <div class="post-item__controls">
                <VButton :intent="'success'" @click="handleEdit">Редактировать</VButton>
-               <VButton intent="error" @click="deletePost">Удалить</VButton>
+               <VButton intent="error" v-if="!isFull" @click="deletePost">Удалить</VButton>
            </div>
        </div>
     `,
     data(){
         return {
             isEditing:false,
-            itemId:-1,
-            postItem:{
-                title:this.item.title
-            }
         }
-    },
-    mounted() {
-      this.itemId=this.item.id;
     },
     props:{
         item:{
             type:Object,
             required:true,
+        },
+        isFull:{
+            type:Boolean,
+            required:false,
+            default:false,
+        }
+    },
+    computed:{
+        itemDescription(){
+            return this.item.text!==""?this.item.text:'Описание не заполнено'
+        },
+        convertStatus(){
+                return  STATUS[this.item.status];
+        },
+        statusArray(){
+            return Array.from(STATUS);
         }
     },
     methods:{
@@ -261,31 +281,29 @@ const PostItem={
             this.isEditing=!this.isEditing;
         },
         submit(){
-            if(this.postItem.title!==""){
-                usePosts().updatePostById(this.itemId,this.postItem)
+            if(this.item.title!=="")return;
+                usePosts().updatePostById(this.item.id,this.item)
                     .then(response=>{
                         this.$emit('update',response.id)
                         this.handleEdit()
                     })
-            }
+
         },
         deletePost(){
-            this.$emit('delete',this.itemId);
+            this.$emit('delete',this.item.id);
         },
         redirectPage(){
-            this.$router.push(`/${this.itemId}`);
+            this.$router.push(`/${this.item.id}`);
         }
     }
 }
-
+//Главная стр
 const Home={
     data() {
         return {
             posts:[],
             postForm:{
                 title:"",
-                text:"",
-                status:1,
             }
         };
     },
@@ -294,8 +312,7 @@ const Home={
     },
     template:`
         <VForm @submit.prevent="submit()">
-           <VInput v-model="postForm.title" placeholder="Title" label="Title"  />
-           <VInput v-model="postForm.text" placeholder="Text" label="Text"  />
+           <VInput v-model="postForm.title" placeholder="Название" label="Название"  />
                <VButton :intent="'primary'">Добавить</VButton>
         </VForm>
        <div class="post-list">
@@ -325,30 +342,26 @@ const Home={
             })
         },
         async createPost(){
+            if(this.postForm.title==="")return;
             usePosts().createPost(this.postForm)
                 .then(response=>usePosts().fetchPostsById(response.id))
-                .then(data=>this.posts=[...this.posts,data]);
+                .then(data=>this.posts=[...this.posts,data])
+                .finally(this.postForm.title="");
         },
         submit(){
             this.createPost();
         }
     },
 }
+
+//Детальная стр
 const Detail={
     template:`
         <div class="detail">
             <router-link class="button-link"  to="/" >Назад</router-link>
             <div class="detail__title">Пост №{{pageID}}</div>
             <div class="detail-body">
-                <VBadge :text="itemStatus" :intent="item.status"  />
-                <div class="detail-prop">
-                    <div class="detail-prop__title">Название:</div>
-                    <div class="detail-prop__value">{{item.title}}</div>
-                </div>
-                <div class="detail-prop">
-                    <div class="detail-prop__title">Описание:</div>
-                    <div class="detail-prop__value">{{itemDescription}}</div>
-                </div>
+                <PostItem :item="item" :is-full="true" />
            </div>
        </div> 
     `,
@@ -356,33 +369,19 @@ const Detail={
         return{
             pageID:this.$route.params.id,
             item: {},
-            loading:true,
         }
+    },
+    components: {
+      PostItem
     },
     created(){
         this.fetchPost();
-    },
-    watch:{
-
-    },
-    computed: {
-      badgeColor(){
-
-      },
-      itemDescription(){
-          return this.item.text!==""?this.item.text:'Описание не заполнено'
-      },
-        itemStatus(){
-            if(!this.loading){
-                return  STATUS[this.item.status];
-            }
-        }
     },
     methods:{
         fetchPost(){
             usePosts().fetchPostsById(this.pageID)
                 .then(response=>this.item=response)
-                .finally(this.loading=false)
+
         }
     }
 
@@ -398,7 +397,7 @@ const routes = [
 
 const router = VueRouter.createRouter({
     history: VueRouter.createWebHashHistory(),
-    routes, // short for `routes: routes`
+    routes,
 })
 const UI_ELEMENTS=[VInput,VButton,VDefaultLayout,VForm,VBadge];
 UI_ELEMENTS.forEach((el)=>{
