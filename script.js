@@ -15,12 +15,12 @@ const usePosts=()=>{
     async function fetchPosts(){
         try{
             const response=await fetch(API_ENDPOINT);
-            if(response.ok){
+            if(!response.ok){
+                throw  new Error("Fetch error");
+                return;
+            }
                 const data=await response.json();
                 return data;
-            }else{
-                throw  new Error("Custom Error");
-            }
         }catch (e){
             console.log(e)
         }
@@ -34,12 +34,13 @@ const usePosts=()=>{
                 },
                 body:JSON.stringify(item)
             })
-            if(response.ok){
+            if(!response.ok){
+                throw  new Error("Create Post error");
+                return;
+            }
                 const data=await  response.json();
                 return data;
-            }else{
-                throw  new Error("Custom Error");
-            }
+
         }catch (e){
             console.log(e)
         }
@@ -48,12 +49,12 @@ const usePosts=()=>{
         try{
 
              const response= await fetch(`${API_ENDPOINT}/${id}`)
-            if(response.ok){
+            if(!response.ok){
+                throw  new Error("Fetch by id  error");
+                return;
+            }
                 const data=await response.json();
                 return data;
-            }else{
-                throw  new Error("Custom Error");
-            }
         }catch (e){
             console.log(e)
         }
@@ -63,12 +64,13 @@ const usePosts=()=>{
             const response=await fetch(`${API_ENDPOINT}/${id}`,{
                 method:'DELETE'
             })
-            if(response.ok){
+            if(!response.ok){
+                throw  new Error("Delete post error");
+                return;
+            }
                 const data=await response.json();
                 return data;
-            }else {
-                throw  new Error("Custom Error");
-            }
+
         }catch (e){
             console.log(e);
         }
@@ -82,12 +84,13 @@ const usePosts=()=>{
                 },
                 body:JSON.stringify(item)
             })
-            if(response.ok){
+            if(!response.ok){
+                throw  new Error("Update post error");
+                return;
+            }
                 const data=await response.json();
                 return data;
-            }else {
-                throw  new Error("Custom Error");
-            }
+
         }catch (e){
             console.log(e);
         }
@@ -281,7 +284,7 @@ const PostItem={
             this.isEditing=!this.isEditing;
         },
         submit(){
-            if(this.item.title!=="")return;
+            if(this.item.title==="")return;
                 usePosts().updatePostById(this.item.id,this.item)
                     .then(response=>{
                         this.$emit('update',response.id)
