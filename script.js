@@ -1,5 +1,5 @@
 /*https://stackoverflow.com/questions/10883211/why-does-my-http-localhost-cors-origin-not-work*/
-
+/*Пришлось поставить,cors замучили меня на этапе разработки) https://chromewebstore.google.com/detail/allow-cors-access-control/lhobafahddgcelffkeicbaginigeejlf?pli=1*/
 const API_ENDPOINT="https://skylord.ru/test";
 
 const STATUS={
